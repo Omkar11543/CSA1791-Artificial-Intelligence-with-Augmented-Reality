@@ -1,0 +1,30 @@
+%Define the operations
+:-op(300,xfy,'and').
+:-op(400,xfy,'or').
+:-op(500,fy,'not').
+%Define a predicate that evaluates a logical expression
+evaluate(X,X,true):-X=true.
+evaluate(X,X,false):-X=false.
+evaluate(not(X),Y,Result):-
+    evaluate(X,Y,Result),
+    (XResult=true->Result=false,Result=true).
+evaluate(X and Y,Z,Result):-
+    evaluate(X,Z,XResult),
+    evaluate(Y,Z,YResult),
+    (XResult=true,YResult=true->Result=true;Result=false).
+evaluate(X or Y,Z,Result):-
+    evaluate(X,Z,XResult),
+    evaluate(Y,Z,YResult),
+    (XResult=true;YResult=true->Result=true;Result=false).
+%Define a predicate that generates the truth table
+truth_table(Expression):-
+    write('Expression:'),write(Expression),n1,
+    write('---'),n1,
+    write('X Y Result'),n1,
+    write('---'),n1,
+    forall(member(X,[true,false]),
+           forall(member(Y,[true,false]),
+                  (evaluate(Expression,[X,Y],Result),
+                   write(X),write('  '),
+                   write(Y),write('  '),
+                   write(Result),n1))).
